@@ -52,7 +52,9 @@ componentDidMount () {
     this.setState({
         queBoard : this.state.questions  
     })
-    
+    window.onpopstate = e => {
+        this.props.history.push("/logout");
+      };
 }
 
 componentWillMount(){
@@ -375,8 +377,8 @@ getNextQuestion =() => {
                       <audio ref = {this.wrongSound} src={wrongNotification}></audio>
                       <audio ref = {this.buttonSound} src={buttonNotification}></audio>
                   </Fragment>
-                  <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap"}}>
-                  <Card style={{width:" 10.50em",
+                  <div  style={{ display:"flex", alignItems:"center", flexWrap:"wrap"}}>
+                  <Card  style={{width:" 10.50em",
                                 height: "37vh",
                                 display: "flex",
                                 flexWrap: "wrap",

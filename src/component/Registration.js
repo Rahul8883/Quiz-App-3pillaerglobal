@@ -78,6 +78,9 @@ export class Registeration extends Component {
       localStorage.setItem('passCode', this.state.passCode)
     this.props.history.replace("/play/instruction");
   };
+  handleHome=()=>{
+    this.props.history.push('/')
+  }
   render() {
     return (
         <Fragment>
@@ -89,7 +92,7 @@ export class Registeration extends Component {
         <div id="home_">
         <section>
             <div style={{ textAlign:"center"}}>
-                <img src ={require ('../assets/landingPageIcon.svg')} alt="tpglogo" style={{width:"8rem", textAlign:"center", marginBottom:"1rem", marginTop:"1rem"}}/>
+                <img src ={require ('../assets/landingPageIcon.svg')} alt="tpglogo" style={{width:"5rem", textAlign:"center", marginBottom:"1rem", marginTop:"1rem"}}/>
             </div>
             <h1>Quiz App</h1>
             <div className="play-button-container"></div>
@@ -158,10 +161,12 @@ export class Registeration extends Component {
                           errorMessages={["password mismatch", "this field is required" ]}
                           value={this.state.repeatPassword} />
                       </div>
-                      <div className="field">
+                      <div className="field" id="pass-code">
+                        passCode
                         <input
-                          className="field"
+                          className="field_"
                           label="Pass Code"
+                          placeholder="Passcode"
                           onChange={(e)=>this.handlerField(e,"passCode")}
                           name="Pass-Code"
                           type="text"
@@ -172,8 +177,8 @@ export class Registeration extends Component {
                       </div>
                       <div className="p-buuton">
                       <button fullWidth type="submit" className="play-button_" style={{borderStyle: "none", border: "2px solid",
-        background: "bottom"}}>Register  and Play Quiz</button>
-        <button>Home</button>
+        background: "bottom"}}>Register</button>
+        <button className="home_" onClick={this.handleHome}>Home</button>
         </div>
                     </ValidatorForm>
                   </div>
