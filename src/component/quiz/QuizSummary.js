@@ -2,9 +2,9 @@ import React, { Component, Fragment } from 'react'
 import Helmet from 'react-helmet'
 import checkCircle from '../../assets/check-circle.svg';
 import {Link} from 'react-router-dom'
+import { Button } from '@material-ui/core';
 export class QuizSummary extends Component {
-    /**
-     * 
+    /** 
      * @param {props} props The component receives the argument as a props object.
      */
     constructor(props) {
@@ -18,7 +18,6 @@ export class QuizSummary extends Component {
              wrongAnswer : 0,
         }
     }
-    
     componentWillMount (){
         const { state } = this.props.history.location
         this.setState({
@@ -28,6 +27,10 @@ export class QuizSummary extends Component {
             correctAnswer : state.correctAnswer,
             wrongAnswer : state.wrongAnswer
         })
+    }
+    handleLogout=()=>{
+        localStorage.clear()
+        this.props.history.push('/')
     }
     render() {
         const { state } = this.props.location
@@ -71,17 +74,15 @@ export class QuizSummary extends Component {
 
             <span className="stat-left"> Number of wrong Answer : </span>
             <span className="right">{this.state.wrongAnswer}</span>   
-
             </div>
-
                 </div>
                 <section>
                     <ul>
                         <li>
-                            <Link to = '/'>Back to Home Page</Link>
+                        <Button onClick={this.handleLogout} >LogOut</Button>
                         </li>
                         <li>
-                            <Link to = '/play/quiz'>Play Again</Link>
+                            <Link to = '/login'>Play Again</Link>
                         </li>
                     </ul>
                 </section>
@@ -93,7 +94,8 @@ export class QuizSummary extends Component {
                 <h1 className="no-stats"> No Statistics Available</h1>
                 <ul>
                     <li>
-                        <Link to = '/'>Back to Home Page</Link>
+                        <Button onClick={this.handleLogout} >LogOut</Button>
+                        {/* <Link to = '/'>Back to Home Page</Link> */}
                     </li>
                     <li>
                         <Link to = '/play/quiz'>Take a Quiz</Link>

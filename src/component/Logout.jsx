@@ -6,14 +6,13 @@ import { Button } from '@material-ui/core';
  * @param {Object} props 
  */
 function Logout(props) {
-  localStorage.clear();
   /**
    * 
    * @param {Object} event - contains event fired on button click 
    */
   const handleRegister = (event) => {
     event.preventDefault();
-    props.history.push("/");
+    props.history.push("/login");
   }
   
   return (
@@ -25,8 +24,8 @@ function Logout(props) {
     <div id="result">
     <section>
         <div className="container">
-      <h1>you cannot go back to test please register again</h1>
-      <Button varient="contained" size="medium" id="btn" onClick={handleRegister}>Home</Button>
+      <h1>you cannot go back to test please Login again</h1>
+      <Button varient="contained" size="medium" id="btn" onClick={handleRegister}>Login</Button>
       </div>
    </section>
     </div>

@@ -21,7 +21,8 @@ export class Login extends Component {
              Password : localStorage.getItem('password'),
              snackbarOpen: false,
              snackbarMsg: "",
-             open : false
+             open : false,
+             logedIn : false
         }
     }
     handleClose=()=>{
@@ -71,9 +72,13 @@ export class Login extends Component {
         } else if(this.state.email===this.state.Email && this.state.password===this.state.Password){
             this.setState({
                 snackbarOpen: true,
-                snackbarMsg: "Login Successfully"
+                snackbarMsg: "Login Successfully",
+                logedIn : true
             })
-            localStorage.setItem('Login', "login")
+            localStorage.setItem('Login', true)
+            localStorage.setItem('pageLoad', "Y")
+            console.log("gautam is getting data from localstroage",localStorage.getItem("Login"));
+            
             this.props.history.push("/play/instruction");
         }
     }

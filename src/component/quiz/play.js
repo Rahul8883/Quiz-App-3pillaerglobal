@@ -11,10 +11,6 @@ import buttonNotification from '../../assets/audio/button-3.mp3';
 import classnames from 'classnames';
 import Card from '@material-ui/core/Card';
 export class Play extends Component {
-     /**
-     * 
-     * @param {props} Property The component receives the argument as a props object. 
-     */
     constructor(props) {
         super(props)
     
@@ -30,14 +26,15 @@ export class Play extends Component {
              currentQuestionIndex:0,
              correctAnswers:0,
              wrongAnswers:0,
-             hints:5,
-             fiftyfifty:2,
              usedFiftyFiofty:false,
              time : {},
              nextButtonDisabled : false,
              previousButtonDisabled : true,
              rightAnswer :[],
-             incorrectAnswer : []
+             incorrectAnswer : [],
+             count :0,
+             queCount :"",
+             distValue: localStorage.getItem('distance')  
         }
         this.interval = null;
         this.correctSound = React.createRef();
@@ -46,20 +43,40 @@ export class Play extends Component {
     }
 
 componentDidMount () { 
-    const { questions, currentQuestion, nextQuestion, previousQuestion} = this.state;
+    const { questions, currentQuestion, nextQuestion, previousQuestion, time} = this.state; 
+    this.setState({
+        distValue: localStorage.getItem("distance")
+    })
+    localStorage.removeItem('distance') 
+    if(localStorage.getItem("pageLoad")!=="Y")
+    { 
+        console.log("yessdsfgdsfgdsgfdgfd")
+        console.log("LocalStorageQuestion in componentDidMount", JSON.parse(localStorage.getItem('question')));
+        localStorage.setItem("pageLoad1", "N")
+        this.setState({
+        count : 1,
+        queBoard :JSON.parse( localStorage.getItem('question')),  
+        currentQuestion:JSON.parse(localStorage.getItem('currentQuestion')),
+        nextQuestion:JSON.parse(localStorage.getItem('nextQuestion')),
+        previousQuestion: JSON.parse (localStorage.getItem('previousQuestion')),
+        numberOfQuestions :localStorage.getItem("numberOfQuestions"),
+        queCount : localStorage.getItem("queCount")
+    })
+    this.startTimer();
+    this.displayQuestions ( this.state.queBoard, currentQuestion, nextQuestion, previousQuestion);
+    } else {
     this.displayQuestions ( questions, currentQuestion, nextQuestion, previousQuestion);
     this.startTimer();
     this.setState({
         queBoard : this.state.questions  
     })
-    window.onpopstate = e => {
-        this.props.history.push("/logout");
-      };
 }
+ window.onpopstate = e => {
+        this.props.history.push("/logout");
+      }
+ }
 
 componentWillMount(){
-    console.log("Total number of Questions", this.state.questions.length);
-    
     clearInterval(this.interval)
 }
 /**
@@ -70,6 +87,7 @@ componentWillMount(){
  */
 displayQuestions = (questions = this.state.questions, currentQuestion, nextQuestion, previousQuestion)=>{
     let {currentQuestionIndex}= this.state;
+    var questionData;
     if(!isEmpty(questions)){
         questions = this.state.questions;
         currentQuestion = questions[currentQuestionIndex];
@@ -79,20 +97,39 @@ displayQuestions = (questions = this.state.questions, currentQuestion, nextQuest
         /**
          * This is use to setting the state using setState.
          */
+        if(localStorage.getItem('numberOfQuestions')!==0){
+        questionData=localStorage.getItem('numberOfQuestions')
+        }else{
+            questionData= questions.length
+        }
         this.setState({
             currentQuestion,
             nextQuestion,
             previousQuestion,
             numberOfQuestions: questions.length,
-            answer
+            answer, 
+            queCount : currentQuestionIndex+1
         }, ()=>{
             /**
              * This is method binding process (To call the handleDisableButton()) for performing action on screen.
              */
             this.handleDisableButton();
         })
+            console.log("currentQuestion in display function",currentQuestion);
+            localStorage.setItem('question',JSON.stringify (this.state.questions));
+            var question = JSON.parse(localStorage.getItem('question'))
+            console.log("question data found in play comp", question);
+            localStorage.setItem("currentQuestion",JSON.stringify( currentQuestion))
+            localStorage.setItem("nextQuestion", JSON.stringify( nextQuestion))
+            localStorage.setItem("previousQuestion",JSON.stringify(  previousQuestion))
+            localStorage.setItem("numberOfQuestions", this.state.numberOfQuestions)
+            localStorage.setItem("answer",answer)
+            localStorage.setItem("queCount",this.state.queCount)
+            console.log(("queCount",this.state.queCount))
+            localStorage.removeItem('pageLoad')
+            console.log("currentQuestion",currentQuestion)
     }
-    }
+ }
 /**
  * handleOptionClick, is use to handle option for select and check either correct or wrong.
  */
@@ -115,11 +152,11 @@ displayQuestions = (questions = this.state.questions, currentQuestion, nextQuest
            this.checkAnswer(0);
        }
     }
-
+/**
+ * @param {value} value this parameter is use to check the value which is selected from end user.
+ */
     checkAnswer=(value)=>{
         try {
-            
-        
         if(value){
             if(this.state.rightAnswer.length>0){
             const found = this.state.rightAnswer.find(element => element.id === this.state.currentQuestion.id);
@@ -169,12 +206,15 @@ displayQuestions = (questions = this.state.questions, currentQuestion, nextQuest
                 this.state.incorrectAnswer.push(this.state.questions[this.state.currentQuestionIndex])
                this.getNextQuestion();
             }
+            localStorage.setItem("correctAnswer", this.state.correctAnswers);
+            localStorage.setItem("IncoorectAnswer", this.state.incorrectAnswer.length);
+            console.log("IncoorectAnswer", this.state.incorrectAnswer.length);
+            console.log("correctAnswers", this.state.correctAnswers);
         }
     } catch (error) {
-      console.log("Error occur while checking result", error);
-            
-    }
-    }
+      console.log("Error occur while checking result", error);      
+         }
+}
    
     /**
      * handleNextButtonClick, This handler method is to handle the next button click. 
@@ -188,11 +228,6 @@ displayQuestions = (questions = this.state.questions, currentQuestion, nextQuest
             this.setState(prevState =>({
                 currentQuestionIndex : prevState.currentQuestionIndex  + 1
             }), ()=>{
-                /**
-                 * @param {currentQuestion} currentQuestion Current question of this quiz which is appear in display(only one at that time).
-                 * @param {nextQuestion} nextQuestion Next question which is occur when finish the current question.
-                 * @param {previousQuestion } previousQuestion Previous question which is left or may be you want to recheck.
-                 */
                 this.displayQuestions(this.state.state, this.state.currentQuestion, this.state.nextQuestion, this.state.previousQuestion)
             })
         }
@@ -209,11 +244,6 @@ displayQuestions = (questions = this.state.questions, currentQuestion, nextQuest
             this.setState(prevState =>({
                 currentQuestionIndex : prevState.currentQuestionIndex  - 1
             }), ()=>{
-                 /**
-                 * @param {currentQuestion} currentQuestion Current question of this quiz which is appear in display(only one at that time).
-                 * @param {nextQuestion} nextQuestion Next question which is occur when finish the current question.
-                 * @param {previousQuestion } previousQuestion Previous question which is left or may be you want to recheck.
-                 */
                 this.displayQuestions(this.state.state, this.state.currentQuestion, this.state.nextQuestion, this.state.previousQuestion)
             })
         }
@@ -230,65 +260,77 @@ displayQuestions = (questions = this.state.questions, currentQuestion, nextQuest
            this.props.history.push('/')
        }
     }
-
+/**
+ * this function is use to handle previous, next, and quit button during exam process.
+ */
 handleButtonClick=(e)=>{
     switch(e.target.id) {
+
         case "next-button":
             this.handleNextButtonClick();
             break;
+
         case "previous-button" : 
             this.handlePreviousButtonClick();
             break;
-            case "quit-button" : 
+
+        case "quit-button" : 
             this.handleQuitButtonClick();
             break;
-            
+
             default : 
             break;
-    }
-       
+    }     
 }
-
+/**
+ * This function is use to handle button sound when heating next, previous and quit button.
+ */
 playButtonSound = ()=>{
     this.buttonSound.current.play();   
 }
-
+/**
+ * This function is use to handle next button during quiz.
+ */
 getNextQuestion =() => {
         this.setState(prevState =>({
-          
             correctAnswers : prevState.correctAnswers + 1,
             currentQuestionIndex : prevState.currentQuestionIndex + 1,
             numberOfAnsweredQuestion : this.state.rightAnswer.length+this.state.incorrectAnswer.length
         }), () =>{
             if(this.state.nextQuestion === undefined){
+                //End function call when total number of question is end.
                 this.endGame();
             }else{
-                /**
- * @param {questions} questions Questions of this Quiz.
- * @param {currentQuestion} currentQuestion Current question of this quiz which is appear in display(only one at that time).
- * @param {nextQuestion} nextQuestion Next question which is occur when finish the current question.
- * @param {previousQuestion} previousQuestion Previous question which is left or may be you want to recheck.
- */
                 this.displayQuestions(this.state.questions, this.state.currentQuestion, this.state.nextQuestion, this.state.previousQuestion)   
-
             }        })
     }
     /**
      * This function is use to set Timer for Quiz.
      */
-    
      preventReload=()=>{
          if(window.location.reload()){
            this.endGame();
          }
      }
     startTimer = ()=>{
-        const countDownTime = Date.now() + 180000;
+        var distance;
+        var countDownTime1 = 0;
+        if(localStorage.getItem("pageLoad1")==="N"){
+            // const str_a = this.state.distValue.toString();
+            // const result = Number(str_a.slice(13, 18));
+            countDownTime1 = Date.now() + this.state.distValue;
+            console.log("control comes in if part", this.state.distValue, countDownTime1);
+        }else{
+            countDownTime1 = Date.now() + 180000;
+            console.log("control comes in else part", countDownTime1);  
+        }
+        const countDownTime=countDownTime1;
         this.interval = setInterval(()=>{
         const now = new Date();
-            const distance = countDownTime- now;
+        distance = countDownTime- now;
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            localStorage.setItem('distance',distance )            
             if (distance < 0) {
                 clearInterval(this.interval);
                 this.setState({
@@ -358,18 +400,15 @@ getNextQuestion =() => {
             this.setState(prevState =>({
                 currentQuestionIndex : index
             }), ()=>{
-                /**
-                 * @param {currentQuestion} currentQuestion Current question of this quiz which is appear in display(only one at that time).
-                 * @param {nextQuestion} nextQuestion Next question which is occur when finish the current question.
-                 * @param {previousQuestion } previousQuestion Previous question which is left or may be you want to recheck.
-                 */
                 this.displayQuestions(this.state.state, this.state.currentQuestion, this.state.nextQuestion, this.state.previousQuestion)
             })
          
     }
     render() {
-      const { currentQuestion, currentQuestionIndex, numberOfQuestions, time } = this.state;
-        return (
+       
+      const { currentQuestion, queCount, numberOfQuestions, time } = this.state;
+     
+      return (
          <Fragment>
                   <Helmet><title>Quiz Page</title></Helmet>
                   <Fragment>
@@ -410,7 +449,7 @@ getNextQuestion =() => {
             <p><span><img src={Bulb} alt="life-line" className="img-size"/> </span> <span className="lifeline"></span></p>
                   </div>
                   <div className="lifeline-container">
-        <p><span className="lifeline">{currentQuestionIndex + 1 } of {numberOfQuestions}</span></p>
+        <p><span className="lifeline">{queCount } of {numberOfQuestions}</span></p>
         <p> <span><img src={Countdown} alt="timer" className="img-size"/></span><span className="lifeline">{time.minutes} : {time.seconds}</span></p>
                   </div>
                   <h5>{currentQuestion.question} </h5>

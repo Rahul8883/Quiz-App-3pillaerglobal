@@ -3,10 +3,12 @@ import { withRouter } from "react-router-dom";
 import { ValidatorForm, TextValidator } from "react-material-ui-form-validator";
 import Helmet from "react-helmet"; 
 export class Registeration extends Component {
+
     /**
      * 
      * @param {props} Property The component receives the argument as a props object. 
      */
+
     constructor(props){
         super(props)
       this.state = {
@@ -16,14 +18,15 @@ export class Registeration extends Component {
         password: "",
         repeatPassword: "",
         register_data: [],
-        passCode: ""
       };  
     }
+
     /**
      *The componentWillMount() is a chance for us to handle configuration,
        update our state, and in general prepare for the first render.
        At this point, props and initial state are defined.
      */
+
   componentDidMount() {
     ValidatorForm.addValidationRule("isPasswordMatch", value => {
       if (value !== this.state.password) {
@@ -36,31 +39,15 @@ export class Registeration extends Component {
   componentWillUnmount() {
     ValidatorForm.removeValidationRule("isPasswordMatch");
   }
+
   handlerField = (event, value) => {
-    if(value==="firstName"){
-      const firstName = event.target.value;
-      this.setState({ firstName });
-    }else if(value==="lastName"){
-      const lastName = event.target.value;
-      this.setState({ lastName });
-    }else if(value==="email"){
-      const email = event.target.value;
-      this.setState({ email });
-    }else if(value==="password"){
-      const password = event.target.value;
-      this.setState({ password });
-    }else if(value==="repeatPassword"){
-      const repeatPassword = event.target.value;
-      this.setState({ repeatPassword });
-    }else if(value==="passCode"){
-      const passCode = event.target.value
-      this.setState({passCode})
-    }
+      this.setState({[value] : event.target.value});
   }
   
   /**
    * After Compleate validation, this handler is use to submit the All user details and make access to main Quiz page and set the data in localStorage.
    */
+
   handleRegisterSubmit = () => {
     let _register = {
       firstName: this.state.firstName,
@@ -75,12 +62,13 @@ export class Registeration extends Component {
       localStorage.setItem('Confirm Your Details', student_data);
       localStorage.setItem('email', this.state.email)
       localStorage.setItem('password', this.state.password)
-      localStorage.setItem('passCode', this.state.passCode)
-    this.props.history.replace("/play/instruction");
-  };
+    this.props.history.replace("/login");
+  }
+
   handleHome=()=>{
     this.props.history.push('/')
   }
+
   render() {
     return (
         <Fragment>
@@ -160,20 +148,6 @@ export class Registeration extends Component {
                           validators={["isPasswordMatch", "required"]}
                           errorMessages={["password mismatch", "this field is required" ]}
                           value={this.state.repeatPassword} />
-                      </div>
-                      <div className="field" id="pass-code">
-                        passCode
-                        <input
-                          className="field_"
-                          label="Pass Code"
-                          placeholder="Passcode"
-                          onChange={(e)=>this.handlerField(e,"passCode")}
-                          name="Pass-Code"
-                          type="text"
-                          required
-                          variant="outlined"
-                          fullWidth
-                          value={this.state.passcode} />
                       </div>
                       <div className="p-buuton">
                       <button fullWidth type="submit" className="play-button_" style={{borderStyle: "none", border: "2px solid",

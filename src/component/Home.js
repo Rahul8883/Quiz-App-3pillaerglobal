@@ -19,7 +19,7 @@ const Home = () => (
             <div className="play-button-container">
               
                 <ul>
-                    <li><Link className="play-button" >3Pillar Global Examination</Link></li>
+                    <Link className="play-button" >3Pillar Global Examination</Link>
                 </ul>
             </div>
             {/**
