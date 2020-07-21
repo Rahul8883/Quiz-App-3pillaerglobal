@@ -49,7 +49,6 @@ export class Play extends Component {
         })
         localStorage.removeItem('distance')
         if (localStorage.getItem("pageLoad") !== "Y") {
-            console.log("yessdsfgdsfgdsgfdgfd")
             console.log("LocalStorageQuestion in componentDidMount", JSON.parse(localStorage.getItem('question')));
             localStorage.setItem("pageLoad1", "N")
             this.setState({
